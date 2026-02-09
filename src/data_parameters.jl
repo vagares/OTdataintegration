@@ -15,8 +15,9 @@ export save_params
     aB::Vector{Float64} = [1.0, 1.0, 1.0]
     r2::Float64 = 0.6
     T::String = "Id"
-    hw::String = "ln"
-    theta::Float64 = pi
+    hW::String = "Id"
+    hS::String = "Id"
+    theta::Float64 = 3.14
 end
 
 """
@@ -31,18 +32,22 @@ function read(jsonfile::AbstractString)
     nA = Int(data["nA"])
     nB = Int(data["nB"])
 
-    aA = Int.(data["aA"])
-    aB = Int.(data["aB"])
+    aA = Float64.(data["aA"])
+    aB = Float64.(data["aB"])
 
-    mA = vec(Int.(data["mA"]))
-    mB = vec(Int.(data["mB"]))
-
+    mA = vec(Float64.(data["mA"]))
+    mB = vec(Float64.(data["mB"]))
     covA = stack([Float64.(x) for x in data["covA"]])
     covB = stack([Float64.(x) for x in data["covB"]])
 
     r2 = Float64(data["r2"])
 
-    return DataParameters(nA, nB, mA, mB, covA, covB, aA, aB, r2,T,hw,theta)
+    T = String(data["T"])
+    hW = String(data["hW"])
+    hS = String(data["hS"])
+    theta = Float64(data["theta"])
+    
+    return DataParameters(nA, nB, mA, mB, covA, covB, aA, aB, r2,T,hW,hS,theta)
 
 end
 

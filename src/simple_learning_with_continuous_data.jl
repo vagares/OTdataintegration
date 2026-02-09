@@ -18,8 +18,8 @@ function learning_with_continuous_data(
     XA = transpose(Matrix{Float32}(dba[!, colnames]))
     XB = transpose(Matrix{Float32}(dbb[!, colnames]))
 
-    YA = Flux.onehotbatch(dba.Y, 1:4)
-    ZB = Flux.onehotbatch(dbb.Z, 1:3)
+    YA = dba.V
+    ZB = dbb.W
 
     dimXA = size(XA, 1)
     dimXB = size(XB, 1)

@@ -1,5 +1,5 @@
 export ContinuousDataGenerator
-
+export generate
 struct ContinuousDataGenerator
 
     params::DataParameters
@@ -8,7 +8,7 @@ struct ContinuousDataGenerator
     binsYB::Vector{Float64}
     binsZB::Vector{Float64}
 
-    function ContinuousDataGenerator(params; scenario = 1, n = 10000,T="homo",hW="ln",theta=π)
+    function ContinuousDataGenerator(params; scenario = 1, n = 10000)
 
         XA = rand(MvNormal(params.mA, params.covA), params.nA)
         XB = rand(MvNormal(params.mB, params.covB), params.nB)
@@ -37,39 +37,49 @@ struct ContinuousDataGenerator
             cr2 *
             sum([aB[i] * aB[j] * covB[i, j] for i in axes(covB, 1), j in axes(covB, 2)])
 
-        if varerrorA == 0
-            Base1 = X1' * aA
-        else
-            Base1 = X1' * aA .+ rand(Normal(0.0, sqrt(varerrorA)), params.nA)
-        end
 
-        if T == "homo"
+
+        if varerrorA == 0
+            U1 = X1' * aA
+            V1 = X1' * aB
+        else
+            U1 = X1' * aA .+ rand(Normal(0.0, sqrt(varerrorA)), params.nA)
+            V1 = X1' * aB .+ rand(Normal(0.0, sqrt(varerrorA)), params.nA)
+        end
+        if params.T == "homo"
             M = x -> sqrt(covA) * inv(sqrt(covB)) * (x .- mB) .+ mA
 
-        elseif T == "Rotation"
+        elseif params.T == "Rotation"
             R = [
-                cos(θ)  -sin(θ)   0.0
-                sin(θ)   cos(θ)   0.0
+                cos(params.theta)  -sin(params.theta)   0.0
+                sin(params.theta)   cos(params.theta)   0.0
                 0.0      0.0      1.0
                 ]
              M = x -> R * x
+        elseif params.T=="Id"
+             M = x -> x
         end
         X2M = hcat([M(X22[:, i]) for i in 1:size(X22, 2)]...)
 
         if varerrorB == 0
-            Base2 = X2' * aB
-            Base2T = X2M' * aB 
+            U2 = X2' * aA
+            U2T = X2M' * aA
+            V2 = X2' * aB
+            V2T = X2M' * aB
         else
-            Base2 = X2' * aB .+ rand(Normal(0.0, sqrt(varerrorB)), params.nB)
-            Base2T = X2M' * aB .+ rand(Normal(0.0, sqrt(varerrorB)), params.nB)
+            U2 = X2' * aA .+ rand(Normal(0.0, sqrt(varerrorB)), params.nB)
+            U2T = X2M' * aA .+ rand(Normal(0.0, sqrt(varerrorB)), params.nB)
+            V2 = X2' * aB .+ rand(Normal(0.0, sqrt(varerrorB)), params.nB)
+            V2T = X2M' * aB .+ rand(Normal(0.0, sqrt(varerrorB)), params.nB)
         end
 
-        bYA = quantile(Base1, [0.25, 0.5, 0.75])
-        bYB = quantile(Base2, [0.25, 0.5, 0.75])
-        bYB2 = quantile(Base2T, [0.25, 0.5, 0.75])
-        bZA = quantile(Base1, [1 / 3, 2 / 3])
-        bZB = quantile(Base2, [1 / 3, 2 / 3])
-        bZB2 = quantile(Base2T, [1 / 3, 2 / 3])
+
+        bYA = quantile(U1, [0.25, 0.5, 0.75])
+        bYB = quantile(U2, [0.25, 0.5, 0.75])
+        bYB2 = quantile(U2T, [0.25, 0.5, 0.75])
+        bZA = quantile(V1, [1 / 3, 2 / 3])
+        bZB = quantile(V2, [1 / 3, 2 / 3])
+        bZB2 = quantile(V2T, [1 / 3, 2 / 3])
 
         if scenario == 1
             binsYA = vcat(-Inf, bYA, Inf)
@@ -78,8 +88,8 @@ struct ContinuousDataGenerator
             binsZB = copy(binsZA)
         else
             binsYA = vcat(-Inf, bYA, Inf)
-            binsZA = vcat(-Inf, bZA2, Inf)
-            binsYB = vcat(-Inf, bYB, Inf)
+            binsZA = vcat(-Inf, bZA, Inf)
+            binsYB = vcat(-Inf, bYB2, Inf)
             binsZB = vcat(-Inf, bZB2, Inf)
         end
 
@@ -139,58 +149,86 @@ function generate(generator::ContinuousDataGenerator; eps = 0.0)
 
 
     if varerrorA == 0
-        Y1 = X1' * aA
+        U1 = X1' * aA
+        V1 = X1' * aB
     else
-        Y1 = X1' * aA .+ rand(Normal(0.0, sqrt(varerrorA)), params.nA)
+        U1 = X1' * aA .+ rand(Normal(0.0, sqrt(varerrorA)), params.nA)
+        V1 = X1' * aB .+ rand(Normal(0.0, sqrt(varerrorA)), params.nA)
     end
 
-    if hW="ln" 
-            Y1hW = log(Y1)
+    if params.hW=="ln"
+        Y1hW = log(U1)
+    elseif params.hW=="Id"
+        Y1hW = U1
+    end
+
+    if params.hS=="ln"
+        Y1hS = log(V1)
+    elseif params.hS=="Id"
+        Y1hS = V1
+    end
+
+    if params.hS=="ln"
+        V1hS = log(V1)
+    elseif params.hS=="Id"
+        V1hS = V1
+    end
                 
-    if T == "homo"
+    if params.T == "homo"
             M = x -> sqrt(covA) * inv(sqrt(covB)) * (x .- mB) .+ mA
 
-    elseif T == "Rotation"
+    elseif params.T == "Rotation"
             R = [
-                cos(θ)  -sin(θ)   0.0
-                sin(θ)   cos(θ)   0.0
+                cos(params.theta)  -sin(params.theta)   0.0
+                sin(params.theta)   cos(params.theta)   0.0
                 0.0      0.0      1.0
                 ]
              M = x -> R * x
-    elsif T=="Id"
+    elseif params.T=="Id"
              M = x -> x
     end
-        X2M = hcat([M(X22[:, i]) for i in 1:size(X22, 2)]...)
-
-        X2M = np.array([M(x) for x in X2])
+    
+    X2M = hcat([M(X22[:, i]) for i in 1:size(X22, 2)]...)
 
     if varerrorB == 0
-        Y2 = X2' * aB
-        Y2T = X2M' * aB
+        U2 = X2' * aA
+        U2T = X2M' * aA
+        V2 = X2' * aB
+        V2T = X2M' * aB
     else
-        Y2 = X2' * aB .+ rand(Normal(0.0, sqrt(varerrorB)), params.nB)
-        Y2T = X2M' * aB .+ rand(Normal(0.0, sqrt(varerrorB)), params.nB)
+        U2 = X2' * aA .+ rand(Normal(0.0, sqrt(varerrorB)), params.nB)
+        U2T = X2M' * aA .+ rand(Normal(0.0, sqrt(varerrorB)), params.nB)
+        V2 = X2' * aB .+ rand(Normal(0.0, sqrt(varerrorB)), params.nB)
+        V2T = X2M' * aB .+ rand(Normal(0.0, sqrt(varerrorB)), params.nB)
     end
 
-    if hW="ln" 
-            Y2ThW = log(Y2T)
-            Y2hW = log(Y2)
+    if params.hW=="ln"
+        Y2hW = log(U2T)
+    elseif params.hW=="Id"
+        Y2hW = U2T
+    end
 
-    YA = digitize(Y1, generator.binsYA)
-    ZA = digitize(Y1, generator.binsZA)
-    VA = Y1
-    WA = Y1hW
-    YB = digitize(Y2, generator.binsYB .+ eps)
-    ZB = digitize(Y2, generator.binsZB .+ eps)
-    VB = Y2
-    WB = Y2hW
+    if params.hS=="ln"
+        Y2hS = log(V2T)
+    elseif params.hS=="Id"
+        Y2hS = V2T
+    end
+
+    YA = digitize(U1, generator.binsYA)
+    ZA = digitize(V1, generator.binsZA)
+    VA = Y1hW
+    WA = Y1hS
+    YB = digitize(U2T, generator.binsYB .+ eps)
+    ZB = digitize(V2T, generator.binsZB .+ eps)
+    VB = Y2hW
+    WB = Y2hS
     p = length(aA)
     colnames = Symbol.("X" .* string.(1:p))
     df = DataFrame(vcat(X1', X2'), colnames)
     df.Y = vcat(YA, YB)
     df.Z = vcat(ZA, ZB)
-    df.V = vcat(VA, VB)
-    df.W = vcat(WA, WB)
+    #df.V = vcat(VA, VB)
+    #df.W = vcat(WA, WB)
     df.database = vcat(fill(1, params.nA), fill(2, params.nB))
 
     @info "Categories in YA $(sort!(OrderedDict(countmap(YA))))"

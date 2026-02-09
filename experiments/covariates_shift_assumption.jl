@@ -76,3 +76,5 @@ function covariates_shift_assumption_continuous(nsimulations::Int)
 
 end
 
+covariates_shift_assumption_continuous(1)
+

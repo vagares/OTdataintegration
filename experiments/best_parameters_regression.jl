@@ -23,7 +23,7 @@ function best_parameters_continuous(start, stop)
 
         for scenario in 1:2
 
-            rng = ContinuousDataGenerator(params, scenario = scenario)
+            rng = ContinuousDataGeneratorreg(params, scenario = scenario)
 
             for i in start:stop
 

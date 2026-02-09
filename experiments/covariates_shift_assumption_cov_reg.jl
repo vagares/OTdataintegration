@@ -1,9 +1,9 @@
 using DelimitedFiles
 using OptimalTransportDataIntegration
 
-function covariates_shift_assumption_continuous(nsimulations::Int)
+function covariates_shift_assumption_continuousreg(nsimulations::Int)
 
-    outfile = "covariates_shift_assumption_continuous.csv"
+    outfile = "covariates_shift_assumption_continuousreg.csv"
     header = ["id", "mB", "estvb", "estwa", "est", "method", "scenario"]
     shift = ([1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0], [0.5 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 2.0], [0.5 0.2 0.2; 0.2 1.0 0.2; 0.2 0.2 2.0], 
                 [0.5 0.1 0.2; 0.1 1.0 0.4; 0.2 0.4 2.0])
@@ -18,7 +18,7 @@ function covariates_shift_assumption_continuous(nsimulations::Int)
 
             for scenario in 1:2
 
-                rng = ContinuousDataGenerator(params, scenario = scenario)
+                rng = ContinuousDataGeneratorreg(params, scenario = scenario)
 
                 for i in 1:nsimulations
 

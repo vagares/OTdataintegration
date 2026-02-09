@@ -17,7 +17,7 @@ function covariates_shift_assumption_continuous(nsimulations::Int)
 
             for scenario in 1:2
 
-                rng = ContinuousDataGenerator(params, scenario = scenario)
+                rng = ContinuousDataGeneratorreg(params, scenario = scenario)
 
                 for i in 1:nsimulations
 

@@ -115,7 +115,7 @@ function otrecod(data::DataFrame, method::SimpleLearningreg)
     vb_true = data.V[data.database .== 2]
     wa_true = data.W[data.database .== 1]
 
-    return JointOTResult(vb_true, wa_true, vb_pred, wa_pred)
+    return JointOTResult_regression(vb_true, wa_true, vb_pred, wa_pred)
 
 end
 
@@ -308,7 +308,7 @@ function otrecod(data::DataFrame, method::JointOTBetweenBasesWithPredictorsreg)
     vb_true = data.V[data.database .== 2]
     wa_true = data.W[data.database .== 1]
 
-    return JointOTResult(vb_true, wa_true, vb_pred, wa_pred)
+    return JointOTResult_regression(vb_true, wa_true, vb_pred, wa_pred)
 
 end
 
@@ -394,7 +394,7 @@ function otrecod(data::DataFrame, method::JointOTBetweenBasesJDOTreg)
     vb_true = data.V[data.database .== 2]
     wa_true = data.W[data.database .== 1]
 
-    return JointOTResult(vb_true, wa_true, vb_pred, wa_pred)
+    return JointOTResult_regression(vb_true, wa_true, vb_pred, wa_pred)
 
 end
 
@@ -565,7 +565,7 @@ function otrecod(data::DataFrame, method::JointOTDABetweenBasesOutcomesWithPredi
     vb_true = data.V[data.database .== 2]
     wa_true = data.W[data.database .== 1]
 
-    return JointOTResult(vb_true, wa_true, vb_pred, wa_pred)
+    return JointOTResult_regression(vb_true, wa_true, vb_pred, wa_pred)
 
 end
 export JointOTBetweenBasesWithoutOutcomes

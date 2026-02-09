@@ -39,8 +39,8 @@ function joint_ot_between_bases_da_outcomes_with_predictors(
 
     dimXA = size(XA, 1)
     dimXB = size(XB, 1)
-    dimYA = size(YA, 1)
-    dimZB = size(ZB, 1)
+    dimYA = 1
+    dimZB = 1
 
     modelXYA = Chain(Dense(dimXA, hidden_layer_size), Dense(hidden_layer_size, dimYA))
     modelXZB = Chain(Dense(dimXB, hidden_layer_size), Dense(hidden_layer_size, dimZB))

@@ -1,16 +1,6 @@
 import Flux
 import Flux: Chain, Dense
 
-function onehot(x::AbstractMatrix)
-    res = Vector{Float32}[]
-    for col in eachcol(x)
-        levels = 1:4 #filter(x -> x != 0, sort(unique(col)))
-        for level in levels
-            push!(res, col .== level)
-        end
-    end
-    return stack(res, dims = 1)
-end
 
 
 function simple_learning_regression(
@@ -27,11 +17,12 @@ function simple_learning_regression(
     colnames = names(data, r"^X")
     XA = onehot(Matrix(dba[!, colnames]))
     XB = onehot(Matrix(dbb[!, colnames]))
-
+    YA = dba.V
+    ZB = dbb.W
     dimXA = size(XA, 1)
     dimXB = size(XB, 1)
-    dimYA = size(YA, 1)
-    dimZB = size(ZB, 1)
+    dimYA = 1
+    dimZB = 1
 
     modelA = Chain(Dense(dimXA, hidden_layer_size), Dense(hidden_layer_size, dimYA))
     modelB = Chain(Dense(dimXB, hidden_layer_size), Dense(hidden_layer_size, dimZB))

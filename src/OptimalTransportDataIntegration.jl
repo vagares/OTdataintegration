@@ -8,6 +8,7 @@ using Printf
 include("data_parameters.jl")
 include("generate_discrete_data.jl")
 include("generate_continuous_data.jl")
+include("generate_continuous_data_reg.jl")
 include("one_hot_encoder.jl")
 
 include("instance.jl")
@@ -32,7 +33,9 @@ include("joint_ot_between_bases_jdot_regression.jl")
 include("joint_ot_between_bases_da_covariables.jl")
 include("joint_ot_between_bases_da_outcomes.jl")
 include("joint_ot_between_bases_da_outcomes_with_predictors.jl")
-include("joint_ot_between_bases_da_outcomes_with_predictors_regression.jl")
+include("joint_ot_between_bases_da_outcomes_with_prediction_regression.jl")
+
+
 struct JointOTResult
 
     yb_true::Vector{Int}
@@ -191,7 +194,7 @@ end
 """
 $(SIGNATURES)
 """
-function mse(sol::JointOTResult)
+function mse(sol::JointOTResult_regression)
 
     return mse(sol.vb_true, sol.vb_pred),
         mse(sol.wa_true, sol.wa_pred),

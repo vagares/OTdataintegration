@@ -19,7 +19,8 @@ function joint_ot_between_bases_jdot_regression(
     cols = names(dba, r"^X")
     XA = transpose(Matrix{Float32}(dba[:, cols]))
     XB = transpose(Matrix{Float32}(dbb[:, cols]))
-
+    YA = dba.V
+    ZB = dbb.W
     XYA = vcat(XA, YA)
     XZB = vcat(XB, ZB)
 
@@ -35,8 +36,8 @@ function joint_ot_between_bases_jdot_regression(
 
     dimXA = size(XA, 1)
     dimXB = size(XB, 1)
-    dimYA = size(YA, 1)
-    dimZB = size(ZB, 1)
+    dimYA = 1
+    dimZB = 1
 
     modelXYA = Chain(Dense(dimXA, hidden_layer_size), Dense(hidden_layer_size, dimYA))
     modelXZB = Chain(Dense(dimXB, hidden_layer_size), Dense(hidden_layer_size, dimZB))

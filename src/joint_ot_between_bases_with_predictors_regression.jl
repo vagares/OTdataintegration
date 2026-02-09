@@ -20,6 +20,9 @@ function joint_ot_between_bases_with_predictors_regression(
     XA = transpose(Matrix{Float32}(dba[!, colnames]))
     XB = transpose(Matrix{Float32}(dbb[!, colnames]))
 
+    YA = dba.V
+    ZB = dbb.W
+
     XYA = vcat(XA, YA)
     XZB = vcat(XB, ZB)
 

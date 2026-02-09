@@ -1,3 +1,4 @@
+
 using OptimalTransportDataIntegration
 using Distributions
 using DocStringExtensions
@@ -6,44 +7,50 @@ using Printf
 using TimerOutputs
 
 const to = TimerOutput()
-
-params = DataParameters(
+params = DataParameters()
+params = DataParameters(params,
     nA = 1000,
     nB = 1000,
     mA = [0.0, 0.0, 0.0],
-    mB = [1.0, 1.0, 0.0],
-    covA = [1.0 0.2 0.2; 0.2 1.0 0.2; 0.2 0.2 1.0],
-    covB = [1.0 0.2 0.2; 0.2 1.0 0.2; 0.2 0.2 1.0],
+    mB = [0.0, 1.0, 0.0],
+    covA = [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0],
+    covB = [1.0 0.0 0.0; 0.0 1.0 0.0; 0.0 0.0 1.0],
     aA = [1.0, 1.0, 1.0],
     aB = [1.0, 1.0, 1.0],
-    r2 = 0.6
+    r2 = 0.6,
+    T = "Id",
+    hW = "Id",
+    hS = "Id",
+    theta = 3.14
 )
 
-rng = ContinuousDataGenerator(params; scenario = 1)
-data = generate(rng)
+rng = ContinuousDataGeneratorreg(params; scenario = 1)
+data = generatereg(rng)
+
+@timeit to "SimpleLearning" est = mse(otrecod(data, SimpleLearningreg()))
+#println("SimpleLearning : $est")
 
 @timeit to "SimpleLearning" est = accuracy(otrecod(data, SimpleLearning()))
-println("SimpleLearning : $est")
+#println("SimpleLearning : $est")
+#@timeit to "JointOTWithinBase" accuracy(otrecod(data, JointOTWithinBase()))
+#println("JointOTWithinBase : $est")
 
-@timeit to "JointOTWithinBase" accuracy(otrecod(data, JointOTWithinBase()))
-println("JointOTWithinBase : $est")
+#@timeit to "JointOTBetweenBasesWithPredictors"  est = accuracy(otrecod(data, JointOTBetweenBasesWithPredictors(reg = 0.0)))
+#println("JointOTBetweenBasesWithPredictors $est")
 
-@timeit to "JointOTBetweenBasesWithPredictors"  est = accuracy(otrecod(data, JointOTBetweenBasesWithPredictors(reg = 0.0)))
-println("JointOTBetweenBasesWithPredictors $est")
+#@timeit to "JointOTBetweenBasesWithoutOutcomes" est = accuracy(otrecod(data, JointOTBetweenBasesWithoutOutcomes(reg = 0.0)))
+#println("JointOTBetweenBasesWithoutOutcomes $est")
 
-@timeit to "JointOTBetweenBasesWithoutOutcomes" est = accuracy(otrecod(data, JointOTBetweenBasesWithoutOutcomes(reg = 0.0)))
-println("JointOTBetweenBasesWithoutOutcomes $est")
+#@timeit to "JointOTBetweenBasesJDOT" est = accuracy(otrecod(data, JointOTBetweenBasesJDOT(reg = 0.0)))
+#println("JointOTBetweenBasesJDOT $est")
 
-@timeit to "JointOTBetweenBasesJDOT" est = accuracy(otrecod(data, JointOTBetweenBasesJDOT(reg = 0.0)))
-println("JointOTBetweenBasesJDOT $est")
+#@timeit to "JointOTDABetweenBasesCovariables" est = accuracy(otrecod(data, JointOTDABetweenBasesCovariables(reg = 0.0)))
+#println("JointOTDABetweenBasesCovariables $est")
 
-@timeit to "JointOTDABetweenBasesCovariables" est = accuracy(otrecod(data, JointOTDABetweenBasesCovariables(reg = 0.0)))
-println("JointOTDABetweenBasesCovariables $est")
+#@timeit to "JointOTDABetweenBasesOutcomes" est = accuracy(otrecod(data, JointOTDABetweenBasesOutcomes(reg = 0.0)))
+#println("JointOTDABetweenBasesOutcomes $est")
 
-@timeit to "JointOTDABetweenBasesOutcomes" est = accuracy(otrecod(data, JointOTDABetweenBasesOutcomes(reg = 0.0)))
-println("JointOTDABetweenBasesOutcomes $est")
+#@timeit to "JointOTDABetweenBasesOutcomesWithPredictors" est = accuracy(otrecod(data, JointOTDABetweenBasesOutcomesWithPredictors(reg = 0.0)))
+#println("JointOTDABetweenBasesOutcomesWithPredictors $est")
 
-@timeit to "JointOTDABetweenBasesOutcomesWithPredictors" est = accuracy(otrecod(data, JointOTDABetweenBasesOutcomesWithPredictors(reg = 0.0)))
-println("JointOTDABetweenBasesOutcomesWithPredictors $est")
-
-@show(to)
+#@show(to)
