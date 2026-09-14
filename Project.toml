@@ -1,7 +1,7 @@
 name = "OptimalTransportDataIntegration"
 uuid = "f00d1d04-589e-4742-a825-5ec24d3c488e"
-authors = ["Jeremy Omer <jeremy.omer@insa-rennes.fr>", "Valérie Garès <valerie.gares@insa-rennes.fr>", "Pierre Navaro <pierre.navaro@math.cnrs.fr>"]
 version = "0.1.2"
+authors = ["Jeremy Omer <jeremy.omer@insa-rennes.fr>", "Valérie Garès <valerie.gares@insa-rennes.fr>", "Pierre Navaro <pierre.navaro@math.cnrs.fr>"]
 
 [deps]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
@@ -35,8 +35,9 @@ StatsModels = "3eaba693-59b7-5ba5-a881-562e759f1c8d"
 TimerOutputs = "a759f4b9-e2f1-59dc-863e-4aeb61b1ea8f"
 XLSX = "fdbf4ff8-1666-58a4-91e7-1b58723a45e0"
 
-[sources]
-PythonOT = {rev = "main", url = "https://github.com/pnavaro/PythonOT.jl"}
+[sources.PythonOT]
+rev = "main"
+url = "https://github.com/pnavaro/PythonOT.jl"
 
 [compat]
 Aqua = "0.8"
@@ -70,7 +71,7 @@ StatsBase = "0.34.4"
 StatsModels = "0.7.7"
 Test = "1"
 TimerOutputs = "0.5.29"
-XLSX = "0.10.4"
+XLSX = "0.10.4, 0.12"
 julia = "1"
 
 [extras]
